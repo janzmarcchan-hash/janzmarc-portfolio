@@ -1,0 +1,1394 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DOSSIER 00-JC-GAMEDEV // Janzmarc Chan — Game Developer Portfolio</title>
+  <!-- Google Fonts: Oswald (Stencil/Headers), Courier Prime & JetBrains Mono (Typewriter/Logs), Inter (Readable Body) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet" />
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            display: ['Oswald', 'sans-serif'],
+            mono: ['JetBrains Mono', 'Courier Prime', 'monospace'],
+            typewriter: ['Courier Prime', 'monospace'],
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            tacticalDark: '#141715',
+            tacticalCard: '#1B201C',
+            parchment: '#EDE8DC',
+            parchmentDeep: '#E2DCCD',
+            inkBlack: '#111312',
+            stampRed: '#B91C1C',
+            oliveDrab: '#4B5548',
+            tacticalAmber: '#B45309',
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    /* Subtle Archival Paper Grain & Tactical Scanline Overlay */
+    .paper-texture {
+      background-color: #EDE8DC;
+      background-image:
+        radial-gradient(rgba(17, 19, 18, 0.045) 1px, transparent 0),
+        linear-gradient(to bottom, rgba(17, 19, 18, 0.025) 50%, transparent 50%);
+      background-size: 20px 20px, 100% 4px;
+    }
+
+    .dark-tactical-grid {
+      background-color: #141715;
+      background-image:
+        linear-gradient(to right, rgba(75, 85, 72, 0.16) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(75, 85, 72, 0.16) 1px, transparent 1px);
+      background-size: 36px 36px;
+    }
+
+    /* Stencil Stamp Styling */
+    .stamp-badge {
+      border: 2px solid #B91C1C;
+      color: #B91C1C;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-family: 'Oswald', sans-serif;
+      box-shadow: inset 0 0 0 1px rgba(185, 28, 28, 0.25);
+    }
+
+    .stamp-amber {
+      border: 2px solid #B45309;
+      color: #B45309;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-family: 'Oswald', sans-serif;
+    }
+
+    .stamp-olive {
+      border: 2px solid #3F4E3C;
+      color: #2F3B2D;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-family: 'Oswald', sans-serif;
+    }
+
+    /* Interactive Redaction Bar */
+    .redacted-block {
+      background-color: #111312;
+      color: #111312;
+      border-radius: 3px;
+      padding: 1px 6px;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.28s ease;
+      user-select: none;
+      box-decoration-break: clone;
+      -webkit-box-decoration-break: clone;
+    }
+
+    .redacted-block::after {
+      content: ' [REDACTED — CLICK TO DECLASSIFY]';
+      color: #EDE8DC;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72em;
+      letter-spacing: 0.06em;
+      font-weight: 600;
+    }
+
+    .redacted-block:hover {
+      background-color: #262B27;
+    }
+
+    .redacted-block.declassified {
+      background-color: rgba(180, 83, 9, 0.16);
+      color: inherit;
+      border-bottom: 1px dashed #B45309;
+      user-select: text;
+    }
+
+    .redacted-block.declassified::after {
+      content: '';
+    }
+
+    /* Corner Registration Crosshairs */
+    .corner-marks {
+      position: relative;
+    }
+    .corner-marks::before,
+    .corner-marks::after {
+      content: '+';
+      position: absolute;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: #4B5548;
+      line-height: 1;
+      pointer-events: none;
+    }
+    .corner-marks::before {
+      top: 6px;
+      left: 8px;
+    }
+    .corner-marks::after {
+      bottom: 6px;
+      right: 8px;
+    }
+
+    @keyframes radarSweep {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .radar-sweep {
+      transform-origin: 180px 180px;
+      animation: radarSweep 9s linear infinite;
+    }
+  </style>
+</head>
+<body class="dark-tactical-grid text-[#EDE8DC] font-sans antialiased selection:bg-[#B91C1C] selection:text-[#EDE8DC] overflow-x-hidden">
+
+  <!-- TOP PERSISTENT SECURITY CLASSIFICATION BANNER -->
+  <div class="bg-[#B91C1C] text-[#EDE8DC] font-mono text-[10px] sm:text-xs font-bold tracking-widest uppercase py-1.5 px-3 text-center border-b-2 border-[#111312] sticky top-0 z-50">
+    TOP SECRET // SCI // NOFORN — DOSSIER NO: 00-JC-GAMEDEV // CLEARANCE: LEVEL-5 // SECTOR: CIIT-BSEMC-QC
+  </div>
+
+  <!-- COMMAND NAVIGATION BAR & DOSSIER TABS -->
+  <header class="sticky top-[28px] sm:top-[30px] z-40 bg-[#141715]/95 backdrop-blur-md border-b border-[#4B5548]/60 shadow-xl">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16 gap-3">
+        <!-- Dossier Identity Stamp -->
+        <a href="#cover" class="flex items-center gap-3 group shrink-0">
+          <div class="w-10 h-10 bg-[#EDE8DC] text-[#111312] border-2 border-[#111312] rounded-md flex flex-col items-center justify-center shadow-md group-hover:bg-[#B91C1C] group-hover:text-[#EDE8DC] transition-colors">
+            <span class="font-display font-bold text-sm leading-none tracking-wider">JC-00</span>
+            <span class="font-mono text-[8px] font-bold mt-0.5">FILE</span>
+          </div>
+          <div class="flex flex-col">
+            <span class="font-display font-bold text-base sm:text-lg tracking-wider uppercase text-[#EDE8DC]">JANZMARC CHAN</span>
+            <span class="font-mono text-[10px] text-[#A3B19E] tracking-widest uppercase">ARCHIVE DIVISION // GAME DEV</span>
+          </div>
+        </a>
+
+        <!-- Desktop Folder Tab Navigation -->
+        <nav class="hidden xl:flex items-center gap-1.5 font-mono text-xs">
+          <a href="#cover" class="px-3 py-2 rounded-t-md bg-[#1B201C] border border-[#4B5548]/60 hover:border-[#EDE8DC] hover:bg-[#EDE8DC] hover:text-[#111312] transition-all">
+            00 // COVER
+          </a>
+          <a href="#personnel" class="px-3 py-2 rounded-t-md bg-[#1B201C] border border-[#4B5548]/60 hover:border-[#EDE8DC] hover:bg-[#EDE8DC] hover:text-[#111312] transition-all">
+            01 // PERSONNEL FILE
+          </a>
+          <a href="#exhibits" class="px-3 py-2 rounded-t-md bg-[#1B201C] border border-[#4B5548]/60 hover:border-[#EDE8DC] hover:bg-[#EDE8DC] hover:text-[#111312] transition-all">
+            02 // FIELD EXHIBITS
+          </a>
+          <a href="#roadmap" class="px-3 py-2 rounded-t-md bg-[#1B201C] border border-[#4B5548]/60 hover:border-[#EDE8DC] hover:bg-[#EDE8DC] hover:text-[#111312] transition-all">
+            03 // MISSION ROADMAP
+          </a>
+          <a href="#comms" class="px-3 py-2 rounded-t-md bg-[#1B201C] border border-[#4B5548]/60 hover:border-[#EDE8DC] hover:bg-[#EDE8DC] hover:text-[#111312] transition-all">
+            04 // COMMS
+          </a>
+        </nav>
+
+        <!-- Global Declassify Toggle & Mobile Drawer Button -->
+        <div class="flex items-center gap-2.5">
+          <button id="globalDeclassifyBtn" type="button"
+                  class="px-3 py-2 rounded-md font-mono text-[11px] font-bold uppercase tracking-wider bg-[#EDE8DC] text-[#111312] hover:bg-[#B45309] hover:text-[#EDE8DC] border border-[#111312] transition-all cursor-pointer flex items-center gap-1.5 shadow">
+            <span id="declassifyLed" class="w-2 h-2 rounded-full bg-[#B91C1C]"></span>
+            <span id="globalDeclassifyText">DECLASSIFY ALL</span>
+          </button>
+
+          <button id="mobileNavBtn" type="button" aria-label="Toggle Dossier Tabs"
+                  class="xl:hidden p-2.5 rounded-md bg-[#1B201C] border border-[#4B5548] text-[#EDE8DC] hover:border-[#EDE8DC]">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Mobile Folder Tabs Drawer -->
+      <div id="mobileNavMenu" class="hidden xl:hidden pb-4 pt-2 border-t border-[#4B5548]/40 grid grid-cols-2 sm:grid-cols-3 gap-2 font-mono text-xs">
+        <a href="#cover" class="px-3 py-2.5 rounded bg-[#1B201C] border border-[#4B5548]/60 text-[#EDE8DC] hover:bg-[#EDE8DC] hover:text-[#111312]">00 // COVER</a>
+        <a href="#personnel" class="px-3 py-2.5 rounded bg-[#1B201C] border border-[#4B5548]/60 text-[#EDE8DC] hover:bg-[#EDE8DC] hover:text-[#111312]">01 // PERSONNEL FILE</a>
+        <a href="#exhibits" class="px-3 py-2.5 rounded bg-[#1B201C] border border-[#4B5548]/60 text-[#EDE8DC] hover:bg-[#EDE8DC] hover:text-[#111312]">02 // FIELD EXHIBITS</a>
+        <a href="#roadmap" class="px-3 py-2.5 rounded bg-[#1B201C] border border-[#4B5548]/60 text-[#EDE8DC] hover:bg-[#EDE8DC] hover:text-[#111312]">03 // MISSION ROADMAP</a>
+        <a href="#comms" class="px-3 py-2.5 rounded bg-[#1B201C] border border-[#4B5548]/60 text-[#EDE8DC] hover:bg-[#EDE8DC] hover:text-[#111312]">04 // COMMS</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 space-y-16 sm:space-y-24">
+
+    <!-- ===================================================================== -->
+    <!-- SECTION 00: COVER / LANDING DOSSIER                                   -->
+    <!-- ===================================================================== -->
+    <section id="cover" class="scroll-mt-28">
+      <div class="paper-texture text-[#111312] rounded-xl border-2 border-[#111312] shadow-2xl p-6 sm:p-10 lg:p-12 corner-marks">
+
+        <!-- Top Dossier Classification Strip -->
+        <div class="flex flex-wrap items-center justify-between gap-4 pb-6 border-b-2 border-[#111312]">
+          <div class="font-mono text-xs space-y-1">
+            <div class="font-bold tracking-wider">DEPARTMENT OF INTERACTIVE SYSTEMS // ARCHIVE DIVISION</div>
+            <div class="text-[#3F4E3C] font-semibold">DOC-REF: IR001-PORTFOLIO-ALPHA // DECLASSIFY ON: [2026-FINAL-EVAL]</div>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="stamp-badge px-3 py-1 text-xs sm:text-sm font-bold -rotate-2 inline-block">
+              EYES ONLY // LEVEL-5
+            </span>
+            <span class="stamp-olive px-3 py-1 text-xs sm:text-sm font-bold rotate-1 hidden sm:inline-block">
+              ACTIVE DEVELOPMENT
+            </span>
+          </div>
+        </div>
+
+        <!-- Dossier Metadata Grid + Radar HUD -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 pt-8 items-center">
+
+          <!-- Left 7 Columns: Subject Dossier & Narrative -->
+          <div class="lg:col-span-7 space-y-6">
+            <!-- Structured Intelligence Header Block -->
+            <div class="bg-[#E2DCCD] border-2 border-[#111312] rounded-lg p-4 sm:p-5 font-mono text-xs sm:text-sm space-y-2 shadow-inner">
+              <div class="grid grid-cols-1 sm:grid-cols-12 gap-1 sm:gap-2 border-b border-[#111312]/20 pb-2">
+                <span class="sm:col-span-4 font-bold text-[#4B5548]">SUBJECT:</span>
+                <span class="sm:col-span-8 font-bold text-[#111312]">JANZMARC CHAN (AGE 29 // RETURNING STEM BUILDER)</span>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-12 gap-1 sm:gap-2 border-b border-[#111312]/20 pb-2">
+                <span class="sm:col-span-4 font-bold text-[#4B5548]">DESIGNATION:</span>
+                <span class="sm:col-span-8 font-bold text-[#B91C1C]">ASPIRING GAME DEVELOPER</span>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-12 gap-1 sm:gap-2 border-b border-[#111312]/20 pb-2">
+                <span class="sm:col-span-4 font-bold text-[#4B5548]">UNIT / PROGRAM:</span>
+                <span class="sm:col-span-8 font-semibold text-[#111312]">CIIT COLLEGE OF ARTS AND TECHNOLOGY — BS EMC (GAMIFICATION &amp; DESIGN)</span>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-12 gap-1 sm:gap-2">
+                <span class="sm:col-span-4 font-bold text-[#4B5548]">SPECIALIZATION:</span>
+                <span class="sm:col-span-8 font-semibold text-[#111312]">GAME SYSTEMS ARCHITECTURE, GAMEPLAY MECHANICS &amp; TACTICAL WORLDBUILDING</span>
+              </div>
+            </div>
+
+            <!-- Main Headline & Slogan -->
+            <div class="space-y-3">
+              <h1 class="font-display text-4xl sm:text-5xl lg:text-6xl font-bold uppercase tracking-tight text-[#111312] leading-none">
+                OPERATIONAL EXISTENCE: <span class="text-[#B91C1C] block sm:inline">GAME DEV DOSSIER</span>
+              </h1>
+              <p class="font-typewriter text-lg sm:text-xl font-bold text-[#B45309] border-l-4 border-[#B91C1C] pl-4 py-1">
+                “Architecting playable worlds where tactical systems meet human grit.”
+              </p>
+            </div>
+
+            <!-- Candid Humanized Briefing Summary -->
+            <div class="space-y-3 text-sm sm:text-base text-[#1F2420] leading-relaxed">
+              <p>
+                <strong>BRIEFING SUMMARY:</strong> At 29 years old, after spending seven years managing high-stakes projects and two years running my own business, I made a deliberate call to step back into freshman year at <strong>CIIT Quezon City</strong>. I didn’t come back to college just to collect another credential—I came back to learn how to engineer the tactical, systems-driven games I have spent my life analyzing and playing.
+              </p>
+              <p>
+                Right now, I am building my foundation from the ground up: writing object-oriented logic in <strong>C++ and Java</strong>, structuring relational game-state databases in <strong>MySQL</strong>, and applying real-world operational discipline so I can ship reliable, playable mechanics.
+                <span class="redacted-block" tabindex="0" role="button" aria-label="Click to declassify personal note">
+                  Personal Field Note: Starting over as a 29-year-old freshman alongside 18-year-old classmates is humbling, especially when debugging C++ pointers at 4:30 AM—but seven years of managing real deadlines taught me that consistency beats raw talent every single day.
+                </span>
+              </p>
+            </div>
+
+            <!-- Tactical Action Triggers -->
+            <div class="flex flex-wrap items-center gap-3 pt-2">
+              <a href="#personnel"
+                 class="px-5 py-3.5 rounded-md bg-[#111312] hover:bg-[#B91C1C] text-[#EDE8DC] font-mono text-xs sm:text-sm font-bold uppercase tracking-wider transition-colors shadow-lg flex items-center gap-2">
+                <span>OPEN PERSONNEL DOSSIER</span>
+                <span>&rarr;</span>
+              </a>
+              <a href="#exhibits"
+                 class="px-5 py-3.5 rounded-md bg-[#E2DCCD] hover:bg-[#111312] text-[#111312] hover:text-[#EDE8DC] border-2 border-[#111312] font-mono text-xs sm:text-sm font-bold uppercase tracking-wider transition-colors flex items-center gap-2">
+                <span>INSPECT FIELD EXHIBITS</span>
+                <span>[08]</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Right 5 Columns: Tactical Radar & Telemetry HUD Graphic -->
+          <div class="lg:col-span-5">
+            <div class="bg-[#141715] text-[#EDE8DC] rounded-lg border-2 border-[#111312] p-5 shadow-xl space-y-4">
+              <div class="flex items-center justify-between font-mono text-[11px] border-b border-[#4B5548]/50 pb-2">
+                <span class="text-[#A3B19E]">FIG 00.A // TACTICAL ENGINE TELEMETRY</span>
+                <span id="radarActiveSector" class="text-[#F59E0B] font-bold">SECTOR: GAMEPLAY_LOOP</span>
+              </div>
+
+              <!-- Custom SVG Tactical Radar & Wireframe HUD -->
+              <div class="flex justify-center py-1">
+                <svg viewBox="0 0 360 360" class="w-full max-w-[300px] h-auto" role="img" aria-label="Tactical Radar HUD showing Game Developer Core Pillars">
+                  <!-- Outer Grid & Range Rings -->
+                  <circle cx="180" cy="180" r="164" fill="#181C19" stroke="#4B5548" stroke-width="1.5" />
+                  <circle cx="180" cy="180" r="130" fill="none" stroke="#4B5548" stroke-width="1" stroke-dasharray="5 5" />
+                  <circle cx="180" cy="180" r="90" fill="none" stroke="#4B5548" stroke-width="1" />
+                  <circle cx="180" cy="180" r="48" fill="none" stroke="#B91C1C" stroke-opacity="0.65" stroke-width="1.5" />
+
+                  <!-- Crosshair Axes -->
+                  <line x1="180" y1="12" x2="180" y2="348" stroke="#4B5548" stroke-opacity="0.55" stroke-width="1" />
+                  <line x1="12" y1="180" x2="348" y2="180" stroke="#4B5548" stroke-opacity="0.55" stroke-width="1" />
+
+                  <!-- Animated Radar Sweep Wedge -->
+                  <g class="radar-sweep">
+                    <path d="M180,180 L180,16 A164,164 0 0,1 296,64 Z" fill="#B45309" fill-opacity="0.16" />
+                    <line x1="180" y1="180" x2="180" y2="16" stroke="#F59E0B" stroke-width="1.5" stroke-opacity="0.85" />
+                  </g>
+
+                  <!-- Tactical Polygon Connecting 3 Game Dev Pillars -->
+                  <polygon points="180,58 286,242 74,242" fill="#B91C1C" fill-opacity="0.14" stroke="#EDE8DC" stroke-width="1.5" stroke-dasharray="4 3" />
+
+                  <!-- Interactive Sector Blips -->
+                  <!-- Node 0: Gameplay Code -->
+                  <g class="radar-node cursor-pointer" data-radar="0">
+                    <circle cx="180" cy="58" r="13" fill="#141715" stroke="#F59E0B" stroke-width="2" />
+                    <circle cx="180" cy="58" r="5" fill="#F59E0B" />
+                    <text x="180" y="36" text-anchor="middle" fill="#EDE8DC" font-family="JetBrains Mono, monospace" font-size="10" font-weight="700">01. GAMEPLAY CODE</text>
+                  </g>
+
+                  <!-- Node 1: Data & State Systems -->
+                  <g class="radar-node cursor-pointer" data-radar="1">
+                    <circle cx="286" cy="242" r="13" fill="#141715" stroke="#B91C1C" stroke-width="2" />
+                    <circle cx="286" cy="242" r="5" fill="#B91C1C" />
+                    <text x="275" y="270" text-anchor="middle" fill="#EDE8DC" font-family="JetBrains Mono, monospace" font-size="10" font-weight="700">02. STATE &amp; SQL</text>
+                  </g>
+
+                  <!-- Node 2: Tactical Worldbuilding -->
+                  <g class="radar-node cursor-pointer" data-radar="2">
+                    <circle cx="74" cy="242" r="13" fill="#141715" stroke="#A3B19E" stroke-width="2" />
+                    <circle cx="74" cy="242" r="5" fill="#A3B19E" />
+                    <text x="86" y="270" text-anchor="middle" fill="#EDE8DC" font-family="JetBrains Mono, monospace" font-size="10" font-weight="700">03. WORLDBUILDING</text>
+                  </g>
+
+                  <!-- Center Target Reticle -->
+                  <circle cx="180" cy="180" r="26" fill="#111312" stroke="#EDE8DC" stroke-width="1.5" />
+                  <text x="180" y="177" text-anchor="middle" fill="#EDE8DC" font-family="Oswald, sans-serif" font-weight="700" font-size="13" letter-spacing="1">DEV-01</text>
+                  <text x="180" y="191" text-anchor="middle" fill="#F59E0B" font-family="JetBrains Mono, monospace" font-size="8">BS EMC</text>
+                </svg>
+              </div>
+
+              <!-- Interactive Radar Selector Buttons -->
+              <div class="grid grid-cols-3 gap-2 font-mono text-[10px]">
+                <button type="button" data-radar-btn="0" class="radar-tab-btn py-2 px-2 rounded bg-[#B45309] text-[#EDE8DC] font-bold border border-[#F59E0B]">
+                  GAMEPLAY CODE
+                </button>
+                <button type="button" data-radar-btn="1" class="radar-tab-btn py-2 px-2 rounded bg-[#1B201C] text-[#A3B19E] border border-[#4B5548] hover:text-[#EDE8DC]">
+                  STATE &amp; DATA
+                </button>
+                <button type="button" data-radar-btn="2" class="radar-tab-btn py-2 px-2 rounded bg-[#1B201C] text-[#A3B19E] border border-[#4B5548] hover:text-[#EDE8DC]">
+                  WORLDBUILDING
+                </button>
+              </div>
+
+              <div id="radarReadout" class="p-3 rounded bg-[#111312] border border-[#4B5548]/60 font-typewriter text-xs text-[#EDE8DC] leading-relaxed">
+                <span class="text-[#F59E0B] font-bold">[GAMEPLAY LOGIC]:</span> Translating rules into C++ &amp; Java state machines—combat loops, resource stamina, and responsive player feedback.
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION 01: PERSONNEL FILE (ABOUT ME — THE ASPIRING GAME DEVELOPER)   -->
+    <!-- ===================================================================== -->
+    <section id="personnel" class="scroll-mt-28 space-y-8">
+      <!-- Section Banner -->
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b-2 border-[#4B5548] pb-4">
+        <div>
+          <div class="font-mono text-xs text-[#F59E0B] tracking-widest uppercase">FILE SECTION 01 // PERSONNEL EVALUATION</div>
+          <h2 class="font-display text-3xl sm:text-4xl font-bold uppercase tracking-wide text-[#EDE8DC]">
+            ABOUT ME — THE ASPIRING GAME DEVELOPER
+          </h2>
+        </div>
+        <span class="font-mono text-xs text-[#A3B19E]">VERIFIED VIA IR001 SELF-ASSESSMENT BATTERY</span>
+      </div>
+
+      <!-- Two-Paragraph Humanized Profile + Self-Assessment Dossier -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+        <!-- Left 7 Cols: Parchment Personnel Narrative -->
+        <div class="lg:col-span-7 paper-texture text-[#111312] rounded-xl border-2 border-[#111312] p-6 sm:p-8 shadow-xl space-y-5 corner-marks">
+          <div class="flex items-center justify-between border-b border-[#111312]/30 pb-3">
+            <span class="font-mono text-xs font-bold uppercase tracking-wider text-[#4B5548]">NARRATIVE DOSSIER // BACKGROUND &amp; MOTIVATION</span>
+            <span class="stamp-badge px-2.5 py-0.5 text-[11px] font-bold">AUTHENTICATED</span>
+          </div>
+
+          <p class="text-sm sm:text-base leading-relaxed text-[#1B201C]">
+            I am a first-year <strong>Bachelor of Science in Entertainment and Multimedia Computing (BS EMC — Gamification &amp; Design)</strong> student at CIIT College of Arts and Technology in Quezon City, building toward a career as a full-spectrum <strong>Game Developer</strong>. Before returning to college, I spent seven years in project management and two years running my own business—environments where vague ideas mean nothing unless you can scope them, manage trade-offs, and actually ship. Today, I am applying that same builder’s mindset to game development: learning <strong>C++, Java, and relational database architecture (MySQL/phpMyAdmin)</strong> so I can engineer player inventories, progression states, and combat mechanics from the inside out.
+          </p>
+
+          <p class="text-sm sm:text-base leading-relaxed text-[#1B201C]">
+            My IR001 self-assessments (Strengths Map, Big Five, VIA, and Learning Style) confirmed what years of real-world operations taught me: my core edge is <strong>high conscientiousness, calm analytical problem-solving under pressure, and preventative self-discipline</strong>. I learn best by breaking complex systems down visually and building hands-on prototypes during quiet, uninterrupted 4:00 AM deep-work blocks. While I naturally gravitate toward focused solo coding, my management background lets me step up smoothly to keep dev teams aligned when deadlines tighten.
+            <span class="redacted-block" tabindex="0" role="button" aria-label="Click to declassify candid reflection">
+              Candid Note: I know I am starting my coding journey later than most peers, which is exactly why I refuse to treat college passively—every C++ lab and SQL schema is rehearsal for shipping my first real game.
+            </span>
+          </p>
+
+          <!-- Key Operational Telemetry Row -->
+          <div class="grid grid-cols-3 gap-3 pt-2">
+            <div class="p-3 bg-[#E2DCCD] border border-[#111312] rounded text-center">
+              <div class="font-display text-xl sm:text-2xl font-bold text-[#111312]">7+ YRS</div>
+              <div class="font-mono text-[10px] font-bold text-[#4B5548] uppercase">Project Delivery</div>
+            </div>
+            <div class="p-3 bg-[#E2DCCD] border border-[#111312] rounded text-center">
+              <div class="font-display text-xl sm:text-2xl font-bold text-[#B91C1C]">04:00 AM</div>
+              <div class="font-mono text-[10px] font-bold text-[#4B5548] uppercase">Deep-Code Sprint</div>
+            </div>
+            <div class="p-3 bg-[#E2DCCD] border border-[#111312] rounded text-center">
+              <div class="font-display text-xl sm:text-2xl font-bold text-[#111312]">BS EMC</div>
+              <div class="font-mono text-[10px] font-bold text-[#4B5548] uppercase">Game Dev Track</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right 5 Cols: Psychological & Learning Style Telemetry Card -->
+        <div class="lg:col-span-5 bg-[#1B201C] border-2 border-[#4B5548] rounded-xl p-6 sm:p-7 space-y-5 shadow-xl">
+          <div class="flex items-center justify-between border-b border-[#4B5548]/60 pb-3">
+            <h3 class="font-display text-xl font-bold uppercase tracking-wide text-[#EDE8DC]">OPERATOR TRAIT PROFILE</h3>
+            <span class="font-mono text-[11px] px-2.5 py-0.5 rounded bg-[#B91C1C]/20 text-[#F87171] border border-[#B91C1C]">IR001 LOG</span>
+          </div>
+
+          <div class="space-y-4 font-mono text-xs">
+            <div class="space-y-1.5">
+              <div class="flex justify-between">
+                <span class="text-[#EDE8DC] font-semibold">CONSCIENTIOUSNESS &amp; ROUTINE</span>
+                <span class="text-[#F59E0B]">95% // ANCHOR</span>
+              </div>
+              <div class="w-full h-2.5 bg-[#111312] rounded overflow-hidden border border-[#4B5548]/60">
+                <div class="h-full bg-[#B91C1C]" style="width: 95%"></div>
+              </div>
+              <p class="font-sans text-[11px] text-[#A3B19E]">Multi-layered physical &amp; digital tracking prevents missed milestones and crunch.</p>
+            </div>
+
+            <div class="space-y-1.5">
+              <div class="flex justify-between">
+                <span class="text-[#EDE8DC] font-semibold">SYSTEMS &amp; ANALYTICAL LOGIC</span>
+                <span class="text-[#F59E0B]">90% // CORE</span>
+              </div>
+              <div class="w-full h-2.5 bg-[#111312] rounded overflow-hidden border border-[#4B5548]/60">
+                <div class="h-full bg-[#B45309]" style="width: 90%"></div>
+              </div>
+              <p class="font-sans text-[11px] text-[#A3B19E]">Deconstructing complex mechanics into clean state machines, rulesets, and normalized tables.</p>
+            </div>
+
+            <div class="space-y-1.5">
+              <div class="flex justify-between">
+                <span class="text-[#EDE8DC] font-semibold">KINESTHETIC / VISUAL LEARNING</span>
+                <span class="text-[#F59E0B]">88% // ACTIVE</span>
+              </div>
+              <div class="w-full h-2.5 bg-[#111312] rounded overflow-hidden border border-[#4B5548]/60">
+                <div class="h-full bg-[#6B7E66]" style="width: 88%"></div>
+              </div>
+              <p class="font-sans text-[11px] text-[#A3B19E]">Learning fastest by building working code loops, concept maps, and playable mockups.</p>
+            </div>
+          </div>
+
+          <div class="p-3.5 rounded bg-[#141715] border border-[#4B5548]/60 font-typewriter text-xs text-[#D6D1C4] leading-relaxed">
+            <strong class="text-[#F59E0B]">FIELD ASSESSMENT:</strong> Great games aren’t built on inspiration alone—they are built by teams who respect schedules, test edge cases, and keep player motivation crystal clear.
+          </div>
+        </div>
+      </div>
+
+      <!-- Interactive Tactical Capability Matrix -->
+      <div class="bg-[#1B201C] border-2 border-[#4B5548] rounded-xl p-6 sm:p-8 space-y-6">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#4B5548]/60 pb-4">
+          <div>
+            <h3 class="font-display text-2xl font-bold uppercase tracking-wide text-[#EDE8DC]">TACTICAL CAPABILITY MATRIX</h3>
+            <p class="font-mono text-xs text-[#A3B19E] mt-1">FILTER BY OPERATIONAL DOMAIN TO INSPECT GAME-DEV APPLICATION</p>
+          </div>
+          <div class="flex flex-wrap gap-2 font-mono text-xs" role="tablist">
+            <button type="button" data-cap-filter="all" class="cap-filter-btn px-3.5 py-2 rounded bg-[#EDE8DC] text-[#111312] font-bold">
+              ALL DOMAINS
+            </button>
+            <button type="button" data-cap-filter="gamedev" class="cap-filter-btn px-3.5 py-2 rounded bg-[#141715] text-[#EDE8DC] border border-[#4B5548] hover:border-[#EDE8DC]">
+              GAME DEV &amp; CODE
+            </button>
+            <button type="button" data-cap-filter="systems" class="cap-filter-btn px-3.5 py-2 rounded bg-[#141715] text-[#EDE8DC] border border-[#4B5548] hover:border-[#EDE8DC]">
+              SYSTEMS &amp; DATA
+            </button>
+            <button type="button" data-cap-filter="ops" class="cap-filter-btn px-3.5 py-2 rounded bg-[#141715] text-[#EDE8DC] border border-[#4B5548] hover:border-[#EDE8DC]">
+              COMMAND &amp; OPS
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="capabilityGrid">
+          <!-- Domain 1: Game Dev & Code -->
+          <div data-cap-domain="gamedev" class="cap-card paper-texture text-[#111312] rounded-lg border-2 border-[#111312] p-5 space-y-4">
+            <div class="flex items-center justify-between">
+              <span class="font-mono text-[11px] font-bold px-2 py-0.5 bg-[#111312] text-[#EDE8DC] rounded">SECTOR 01</span>
+              <span class="font-mono text-[11px] font-bold text-[#B91C1C]">FOUNDATION // ACTIVE</span>
+            </div>
+            <h4 class="font-display text-xl font-bold uppercase">Game Dev &amp; Programming</h4>
+            <p class="text-xs text-[#2D332E] leading-relaxed">
+              Building clean gameplay rules, object-oriented class hierarchies, and interactive worldbuilding frameworks.
+            </p>
+            <ul class="space-y-2 font-mono text-xs border-t border-[#111312]/20 pt-3">
+              <li class="flex justify-between"><span>C++ Core &amp; OOP Logic</span><span class="font-bold text-[#B45309]">BUILDING</span></li>
+              <li class="flex justify-between"><span>Java Class Architecture</span><span class="font-bold text-[#B45309]">BUILDING</span></li>
+              <li class="flex justify-between"><span>Gamification &amp; Loop Design</span><span class="font-bold text-[#2F3B2D]">APPLIED</span></li>
+              <li class="flex justify-between"><span>Tactical Narrative Design</span><span class="font-bold text-[#2F3B2D]">APPLIED</span></li>
+            </ul>
+          </div>
+
+          <!-- Domain 2: Systems & Data -->
+          <div data-cap-domain="systems" class="cap-card paper-texture text-[#111312] rounded-lg border-2 border-[#111312] p-5 space-y-4">
+            <div class="flex items-center justify-between">
+              <span class="font-mono text-[11px] font-bold px-2 py-0.5 bg-[#111312] text-[#EDE8DC] rounded">SECTOR 02</span>
+              <span class="font-mono text-[11px] font-bold text-[#B45309]">ARCHITECTURAL</span>
+            </div>
+            <h4 class="font-display text-xl font-bold uppercase">Systems &amp; Game State Data</h4>
+            <p class="text-xs text-[#2D332E] leading-relaxed">
+              Structuring persistent player progression, gear loadouts, and quest flags using normalized relational schemas.
+            </p>
+            <ul class="space-y-2 font-mono text-xs border-t border-[#111312]/20 pt-3">
+              <li class="flex justify-between"><span>MySQL &amp; phpMyAdmin</span><span class="font-bold text-[#2F3B2D]">PROFICIENT</span></li>
+              <li class="flex justify-between"><span>Relational Schema Design</span><span class="font-bold text-[#2F3B2D]">PROFICIENT</span></li>
+              <li class="flex justify-between"><span>Inventory &amp; Stat Tables</span><span class="font-bold text-[#B45309]">APPLIED</span></li>
+              <li class="flex justify-between"><span>HUD &amp; Telemetry Mapping</span><span class="font-bold text-[#B45309]">APPLIED</span></li>
+            </ul>
+          </div>
+
+          <!-- Domain 3: Command & Ops -->
+          <div data-cap-domain="ops" class="cap-card paper-texture text-[#111312] rounded-lg border-2 border-[#111312] p-5 space-y-4">
+            <div class="flex items-center justify-between">
+              <span class="font-mono text-[11px] font-bold px-2 py-0.5 bg-[#111312] text-[#EDE8DC] rounded">SECTOR 03</span>
+              <span class="font-mono text-[11px] font-bold text-[#2F3B2D]">VETERAN // 7+ YRS</span>
+            </div>
+            <h4 class="font-display text-xl font-bold uppercase">Command &amp; Production Ops</h4>
+            <p class="text-xs text-[#2D332E] leading-relaxed">
+              Real-world production discipline that keeps game dev sprints scoped, conflict-free, and delivered on schedule.
+            </p>
+            <ul class="space-y-2 font-mono text-xs border-t border-[#111312]/20 pt-3">
+              <li class="flex justify-between"><span>7+ Yrs Project Management</span><span class="font-bold text-[#2F3B2D]">VETERAN</span></li>
+              <li class="flex justify-between"><span>2+ Yrs Business Ownership</span><span class="font-bold text-[#2F3B2D]">VETERAN</span></li>
+              <li class="flex justify-between"><span>Sprint Scoping &amp; QA</span><span class="font-bold text-[#2F3B2D]">VETERAN</span></li>
+              <li class="flex justify-between"><span>Squad Conflict Resolution</span><span class="font-bold text-[#2F3B2D]">PROVEN</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION 02: FIELD EXHIBITS & ARCHIVE (MY LEARNING JOURNEY & WORKS)    -->
+    <!-- ===================================================================== -->
+    <section id="exhibits" class="scroll-mt-28 space-y-8">
+      <!-- Section Banner -->
+      <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-4 border-b-2 border-[#4B5548] pb-4">
+        <div>
+          <div class="font-mono text-xs text-[#F59E0B] tracking-widest uppercase">FILE SECTION 02 // INTELLIGENCE MATRIX &amp; ARTIFACT LOGS</div>
+          <h2 class="font-display text-3xl sm:text-4xl font-bold uppercase tracking-wide text-[#EDE8DC]">
+            FIELD EXHIBITS — LEARNING JOURNEY &amp; WORKS
+          </h2>
+        </div>
+        <div class="font-mono text-xs text-[#A3B19E]">
+          SELECT ANY EXHIBIT FILE TO OPEN DECLASSIFIED FIELD LOG
+        </div>
+      </div>
+
+      <!-- Dual-Dimension Filter Bar (Group Filter + Status Filter) -->
+      <div class="bg-[#1B201C] border border-[#4B5548] rounded-xl p-4 sm:p-5 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        <!-- Group Filter -->
+        <div class="flex flex-wrap items-center gap-2 font-mono text-xs">
+          <span class="text-[#A3B19E] font-bold mr-1">FILE GROUP:</span>
+          <button type="button" data-group-filter="all" class="exhibit-group-btn px-3 py-1.5 rounded bg-[#EDE8DC] text-[#111312] font-bold">
+            ALL EXHIBITS (08)
+          </button>
+          <button type="button" data-group-filter="A" class="exhibit-group-btn px-3 py-1.5 rounded bg-[#141715] text-[#EDE8DC] border border-[#4B5548] hover:border-[#EDE8DC]">
+            GROUP A: IR001 SELF-DEV
+          </button>
+          <button type="button" data-group-filter="B" class="exhibit-group-btn px-3 py-1.5 rounded bg-[#141715] text-[#EDE8DC] border border-[#4B5548] hover:border-[#EDE8DC]">
+            GROUP B: GAME DEV &amp; TECH
+          </button>
+        </div>
+
+        <!-- Status Filter -->
+        <div class="flex flex-wrap items-center gap-2 font-mono text-xs">
+          <span class="text-[#A3B19E] font-bold mr-1">STATUS:</span>
+          <button type="button" data-status-filter="all" class="exhibit-status-btn px-2.5 py-1.5 rounded bg-[#B45309] text-[#EDE8DC] font-bold">
+            ALL
+          </button>
+          <button type="button" data-status-filter="COMPLETED" class="exhibit-status-btn px-2.5 py-1.5 rounded bg-[#141715] text-[#A3B19E] border border-[#4B5548] hover:text-[#EDE8DC]">
+            COMPLETED
+          </button>
+          <button type="button" data-status-filter="IN PROGRESS" class="exhibit-status-btn px-2.5 py-1.5 rounded bg-[#141715] text-[#A3B19E] border border-[#4B5548] hover:text-[#EDE8DC]">
+            IN PROGRESS
+          </button>
+          <button type="button" data-status-filter="FUTURE CONCEPT" class="exhibit-status-btn px-2.5 py-1.5 rounded bg-[#141715] text-[#A3B19E] border border-[#4B5548] hover:text-[#EDE8DC]">
+            FUTURE CONCEPT
+          </button>
+        </div>
+      </div>
+
+      <!-- FILE GROUP A: SELF-DEVELOPMENT LOGS -->
+      <div id="groupASection" class="space-y-4">
+        <div class="flex items-center gap-3">
+          <span class="px-3 py-1 bg-[#B91C1C] text-[#EDE8DC] font-mono text-xs font-bold rounded">FILE GROUP A</span>
+          <h3 class="font-display text-2xl font-bold uppercase tracking-wide text-[#EDE8DC]">
+            SELF-DEVELOPMENT LOGS // IR001 OPERATOR CONDITIONING
+          </h3>
+        </div>
+        <div id="groupAGrid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Populated dynamically via JS -->
+        </div>
+      </div>
+
+      <!-- FILE GROUP B: GAME DEV & TECHNICAL EXHIBITS -->
+      <div id="groupBSection" class="space-y-4 pt-4">
+        <div class="flex items-center gap-3">
+          <span class="px-3 py-1 bg-[#B45309] text-[#EDE8DC] font-mono text-xs font-bold rounded">FILE GROUP B</span>
+          <h3 class="font-display text-2xl font-bold uppercase tracking-wide text-[#EDE8DC]">
+            GAME DEV &amp; TECHNICAL EXHIBITS // SYSTEMS, WORLDBUILDING &amp; PROTOTYPES
+          </h3>
+        </div>
+        <div id="groupBGrid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Populated dynamically via JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION 03: MISSION ROADMAP (MY GOALS & CAREER DIRECTION)             -->
+    <!-- ===================================================================== -->
+    <section id="roadmap" class="scroll-mt-28 space-y-8">
+      <!-- Section Banner -->
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b-2 border-[#4B5548] pb-4">
+        <div>
+          <div class="font-mono text-xs text-[#F59E0B] tracking-widest uppercase">FILE SECTION 03 // STRATEGIC EXECUTION DIRECTIVE</div>
+          <h2 class="font-display text-3xl sm:text-4xl font-bold uppercase tracking-wide text-[#EDE8DC]">
+            MISSION ROADMAP — GOALS &amp; CAREER DIRECTION
+          </h2>
+        </div>
+        <span class="font-mono text-xs text-[#A3B19E]">REF: GAP ANALYSIS &amp; SMART OBJECTIVES</span>
+      </div>
+
+      <!-- Target Career Directive Box -->
+      <div class="paper-texture text-[#111312] rounded-xl border-2 border-[#111312] p-6 sm:p-8 shadow-xl flex flex-col lg:flex-row lg:items-center justify-between gap-6 corner-marks">
+        <div class="space-y-2 max-w-3xl">
+          <div class="inline-flex items-center gap-2 font-mono text-xs font-bold text-[#B91C1C]">
+            <span>PRIMARY CAREER OBJECTIVE // 5-YEAR DEPLOYMENT HORIZON</span>
+          </div>
+          <h3 class="font-display text-2xl sm:text-3xl font-bold uppercase text-[#111312]">
+            GAME DEVELOPER — GAMEPLAY PROGRAMMING, SYSTEMS DESIGN &amp; TACTICAL WORLDBUILDING
+          </h3>
+          <p class="text-sm sm:text-base text-[#1F2420] leading-relaxed">
+            My mission is to graduate from CIIT’s BS EMC (Gamification &amp; Design) program with a proven portfolio of playable builds and step into a <strong>Game Developer</strong> role—building responsive gameplay mechanics, stateful progression systems, and grounded interactive worlds where every rule serves the player experience.
+          </p>
+        </div>
+        <div class="shrink-0 bg-[#141715] text-[#EDE8DC] p-4 rounded-lg border-2 border-[#111312] font-mono text-xs space-y-1 min-w-[220px]">
+          <div class="text-[#A3B19E]">TARGET ROLE:</div>
+          <div class="font-display text-lg font-bold text-[#F59E0B] uppercase">GAME DEVELOPER</div>
+          <div class="text-[#EDE8DC]">TRACK: BS EMC &rarr; STUDIO</div>
+          <div class="text-[10px] text-[#A3B19E] pt-1 border-t border-[#4B5548]/50">GAMEPLAY + SYSTEMS + DATA</div>
+        </div>
+      </div>
+
+      <!-- Two-Column Tactical Assessment: Current Readiness vs. Areas for Improvement -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Current Readiness (Assets on Hand) -->
+        <div class="bg-[#1B201C] border-2 border-[#4B5548] rounded-xl p-6 sm:p-7 space-y-4">
+          <div class="flex items-center justify-between border-b border-[#4B5548]/60 pb-3">
+            <h3 class="font-display text-xl font-bold uppercase text-[#EDE8DC]">CURRENT READINESS // ASSETS ON HAND</h3>
+            <span class="font-mono text-[11px] px-2.5 py-0.5 rounded bg-[#3F4E3C] text-[#EDE8DC] font-bold">DEPLOYABLE</span>
+          </div>
+          <p class="font-mono text-xs text-[#A3B19E]">
+            Existing real-world competencies ready for immediate deployment in student and studio game teams:
+          </p>
+          <ul class="space-y-3 text-sm text-[#EDE8DC]">
+            <li class="flex items-start gap-2.5">
+              <span class="font-mono text-[#F59E0B] font-bold">[+]</span>
+              <span><strong>7+ Years Project Management &amp; 2+ Years Business Ownership:</strong> Battle-tested ability to scope features, prevent scope creep, and deliver milestones without panic.</span>
+            </li>
+            <li class="flex items-start gap-2.5">
+              <span class="font-mono text-[#F59E0B] font-bold">[+]</span>
+              <span><strong>Foundational C++, Java &amp; MySQL Fluency:</strong> Active hands-on coding in object-oriented logic and normalized relational database tables for player stats and inventory.</span>
+            </li>
+            <li class="flex items-start gap-2.5">
+              <span class="font-mono text-[#F59E0B] font-bold">[+]</span>
+              <span><strong>Tactical Worldbuilding &amp; Narrative Architecture:</strong> Demonstrated through my 14-page <em>Operational Existence</em> zine and interactive narrative adaptations.</span>
+            </li>
+            <li class="flex items-start gap-2.5">
+              <span class="font-mono text-[#F59E0B] font-bold">[+]</span>
+              <span><strong>Anti-Burnout Daily Discipline:</strong> Strict 4:00 AM coding blocks and 8:00 PM shutdown protocols that keep output steady across intense semesters.</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Areas for Improvement (Skill Gaps) -->
+        <div class="bg-[#1B201C] border-2 border-[#B91C1C]/60 rounded-xl p-6 sm:p-7 space-y-4">
+          <div class="flex items-center justify-between border-b border-[#4B5548]/60 pb-3">
+            <h3 class="font-display text-xl font-bold uppercase text-[#EDE8DC]">AREAS FOR IMPROVEMENT // SKILL GAPS</h3>
+            <span class="font-mono text-[11px] px-2.5 py-0.5 rounded bg-[#B91C1C]/25 text-[#FCA5A5] border border-[#B91C1C] font-bold">PRIORITY TARGETS</span>
+          </div>
+          <p class="font-mono text-xs text-[#A3B19E]">
+            Honest capability gaps identified via Gap Analysis to close across Years 1–4 at CIIT:
+          </p>
+          <ul class="space-y-3 text-sm text-[#EDE8DC]">
+            <li class="flex items-start gap-2.5">
+              <span class="font-mono text-[#EF4444] font-bold">[!]</span>
+              <span><strong>Real-Time Game Engine Mastery (Unity / Unreal Engine):</strong> Moving from console C++/Java scripts into full 2D/3D engine physics, prefabs, and frame-update loops.</span>
+            </li>
+            <li class="flex items-start gap-2.5">
+              <span class="font-mono text-[#EF4444] font-bold">[!]</span>
+              <span><strong>Enemy AI &amp; State Machine Implementation:</strong> Coding responsive patrol, detection, and tactical decision trees that challenge players fairly.</span>
+            </li>
+            <li class="flex items-start gap-2.5">
+              <span class="font-mono text-[#EF4444] font-bold">[!]</span>
+              <span><strong>Engine-to-Database Integration:</strong> Connecting front-end game builds cleanly to MySQL/API backends for persistent player save states and loadouts.</span>
+            </li>
+            <li class="flex items-start gap-2.5">
+              <span class="font-mono text-[#EF4444] font-bold">[!]</span>
+              <span><strong>Shipped Playable Vertical Slices:</strong> Turning paper concepts and zine worldbuilding into downloadable, playtested builds on itch.io and GitHub.</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Three Measurable SMART Development Goals -->
+      <div class="space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <h3 class="font-display text-2xl font-bold uppercase tracking-wide text-[#EDE8DC]">
+            SMART DEVELOPMENT OBJECTIVES // MISSION TIMELINE
+          </h3>
+          <span class="font-mono text-xs text-[#F59E0B]">SPECIFIC • MEASURABLE • ACHIEVABLE • RELEVANT • TIME-BOUND</span>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <!-- GOAL-01 -->
+          <div class="paper-texture text-[#111312] rounded-xl border-2 border-[#111312] p-6 flex flex-col justify-between space-y-5 shadow-lg corner-marks">
+            <div class="space-y-3">
+              <div class="flex items-center justify-between font-mono text-xs">
+                <span class="px-2.5 py-0.5 bg-[#111312] text-[#EDE8DC] font-bold rounded">GOAL-01 // SHORT-TERM</span>
+                <span class="font-bold text-[#B91C1C]">END OF 1ST YEAR</span>
+              </div>
+              <h4 class="font-display text-xl font-bold uppercase text-[#111312]">
+                Ship Playable C++/Java Tactical Encounter Prototype
+              </h4>
+              <p class="text-sm text-[#1F2420] leading-relaxed">
+                Design and build a complete console or 2D tactical encounter prototype in C++ or Java demonstrating clean object-oriented state machines, turn/action resolution, and inventory management.
+              </p>
+            </div>
+            <div class="space-y-3 pt-3 border-t border-[#111312]/25 font-mono text-xs">
+              <div class="flex justify-between">
+                <span class="text-[#4B5548] font-bold">VERIFICATION:</span>
+                <span class="font-bold text-[#111312]">Playable Build + GitHub Repo</span>
+              </div>
+              <div class="space-y-1">
+                <div class="flex justify-between text-[11px]">
+                  <span class="font-bold">CURRENT PROGRESS</span>
+                  <span class="font-bold text-[#B45309]">45% (ACTIVE)</span>
+                </div>
+                <div class="w-full h-2 bg-[#CFC8B6] rounded overflow-hidden border border-[#111312]">
+                  <div class="h-full bg-[#B45309]" style="width: 45%"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- GOAL-02 -->
+          <div class="paper-texture text-[#111312] rounded-xl border-2 border-[#111312] p-6 flex flex-col justify-between space-y-5 shadow-lg corner-marks">
+            <div class="space-y-3">
+              <div class="flex items-center justify-between font-mono text-xs">
+                <span class="px-2.5 py-0.5 bg-[#111312] text-[#EDE8DC] font-bold rounded">GOAL-02 // MID-TERM</span>
+                <span class="font-bold text-[#B45309]">2ND YEAR BS EMC</span>
+              </div>
+              <h4 class="font-display text-xl font-bold uppercase text-[#111312]">
+                Deploy Unity/Unreal Vertical Slice with MySQL Loadouts
+              </h4>
+              <p class="text-sm text-[#1F2420] leading-relaxed">
+                Build and deploy a playable vertical slice in Unity or Unreal Engine featuring a functional tactical HUD, AI patrol/detection behavior, and a MySQL-backed player save and loadout system.
+              </p>
+            </div>
+            <div class="space-y-3 pt-3 border-t border-[#111312]/25 font-mono text-xs">
+              <div class="flex justify-between">
+                <span class="text-[#4B5548] font-bold">VERIFICATION:</span>
+                <span class="font-bold text-[#111312]">Engine Build + DB Schema Demo</span>
+              </div>
+              <div class="space-y-1">
+                <div class="flex justify-between text-[11px]">
+                  <span class="font-bold">CURRENT PROGRESS</span>
+                  <span class="font-bold text-[#4B5548]">20% (DB PREP)</span>
+                </div>
+                <div class="w-full h-2 bg-[#CFC8B6] rounded overflow-hidden border border-[#111312]">
+                  <div class="h-full bg-[#4B5548]" style="width: 20%"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- GOAL-03 -->
+          <div class="paper-texture text-[#111312] rounded-xl border-2 border-[#111312] p-6 flex flex-col justify-between space-y-5 shadow-lg corner-marks">
+            <div class="space-y-3">
+              <div class="flex items-center justify-between font-mono text-xs">
+                <span class="px-2.5 py-0.5 bg-[#111312] text-[#EDE8DC] font-bold rounded">GOAL-03 // LONG-TERM</span>
+                <span class="font-bold text-[#2F3B2D]">GRADUATION &amp; 5-YR</span>
+              </div>
+              <h4 class="font-display text-xl font-bold uppercase text-[#111312]">
+                Ship Game Jam Titles &amp; Secure Studio Game Dev Role
+              </h4>
+              <p class="text-sm text-[#1F2420] leading-relaxed">
+                Complete a multi-project playable game portfolio, collaborate on at least two full-cycle student or indie game jams, and secure a Junior/Associate Game Developer position at a studio.
+              </p>
+            </div>
+            <div class="space-y-3 pt-3 border-t border-[#111312]/25 font-mono text-xs">
+              <div class="flex justify-between">
+                <span class="text-[#4B5548] font-bold">VERIFICATION:</span>
+                <span class="font-bold text-[#111312]">2+ Jam Releases + Studio Hire</span>
+              </div>
+              <div class="space-y-1">
+                <div class="flex justify-between text-[11px]">
+                  <span class="font-bold">CURRENT PROGRESS</span>
+                  <span class="font-bold text-[#2F3B2D]">15% (FOUNDATION)</span>
+                </div>
+                <div class="w-full h-2 bg-[#CFC8B6] rounded overflow-hidden border border-[#111312]">
+                  <div class="h-full bg-[#2F3B2D]" style="width: 15%"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION 04: COMMS & ARCHIVE AUTHENTICATION                            -->
+    <!-- ===================================================================== -->
+    <footer id="comms" class="scroll-mt-28 space-y-8">
+      <div class="paper-texture text-[#111312] rounded-xl border-2 border-[#111312] p-6 sm:p-10 shadow-2xl corner-marks space-y-8">
+
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+          <div class="space-y-3 max-w-2xl">
+            <div class="font-mono text-xs font-bold text-[#B91C1C] tracking-widest uppercase">
+              FILE SECTION 04 // DIRECT COMMS &amp; ARCHIVE VERIFICATION
+            </div>
+            <h2 class="font-display text-3xl sm:text-4xl font-bold uppercase text-[#111312]">
+              ESTABLISH DIRECT TRANSMISSION
+            </h2>
+            <p class="text-sm sm:text-base text-[#1F2420] leading-relaxed">
+              Available for CIIT game development collaborations, student game jams, systems design feedback, and studio mentorship opportunities.
+            </p>
+            <div class="font-mono text-xs text-[#3F4E3C] font-bold">
+              STATION: CIIT COLLEGE OF ARTS AND TECHNOLOGY — QUEZON CITY, METRO MANILA
+            </div>
+          </div>
+
+          <!-- Contact & Repository Links -->
+          <div class="flex flex-col gap-3 min-w-[270px]">
+            <!-- One-Click Copy Email -->
+            <div class="flex items-center justify-between gap-3 px-4 py-3 rounded-lg bg-[#E2DCCD] border-2 border-[#111312]">
+              <div class="font-mono text-xs sm:text-sm font-bold text-[#111312] truncate" id="commsEmail">
+                janzmarc.chan@gmail.com
+              </div>
+              <button id="copyCommsBtn" type="button"
+                      class="px-3 py-1.5 rounded bg-[#111312] hover:bg-[#B91C1C] text-[#EDE8DC] font-mono text-xs font-bold uppercase transition-colors shrink-0 cursor-pointer">
+                COPY
+              </button>
+            </div>
+
+            <!-- External Profile Links -->
+            <div class="grid grid-cols-3 gap-2 font-mono text-xs font-bold">
+              <a href="https://github.com" target="_blank" rel="noopener noreferrer"
+                 class="py-2.5 px-3 text-center rounded bg-[#141715] hover:bg-[#B91C1C] text-[#EDE8DC] border border-[#111312] transition-colors">
+                GITHUB
+              </a>
+              <a href="https://itch.io" target="_blank" rel="noopener noreferrer"
+                 class="py-2.5 px-3 text-center rounded bg-[#141715] hover:bg-[#B45309] text-[#EDE8DC] border border-[#111312] transition-colors">
+                ITCH.IO
+              </a>
+              <a href="https://www.linkedin.com" target="_blank" rel="noopener noreferrer"
+                 class="py-2.5 px-3 text-center rounded bg-[#141715] hover:bg-[#3F4E3C] text-[#EDE8DC] border border-[#111312] transition-colors">
+                LINKEDIN
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Originality & Asset Attribution Notice (Per CIIT Guidelines) -->
+        <div class="pt-6 border-t-2 border-[#111312]/30 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 font-mono text-[11px] text-[#2D332E]">
+          <div>
+            <strong>DOCUMENT AUTHENTICATED:</strong> [JANZMARC CHAN] // IR001 SELF-DEVELOPMENT PORTFOLIO (2026)
+          </div>
+          <div class="max-w-2xl md:text-right leading-relaxed">
+            <strong>ORIGINALITY &amp; ATTRIBUTION NOTICE:</strong> All personal reflections, self-assessment analyses, SMART career roadmaps, symposium leadership logs, and <em>Operational Existence</em> zine narratives are original student works by Janzmarc Chan. Interactive dossier layout, custom SVG radar graphics, and styling elements were built specifically for this academic presentation.
+          </div>
+        </div>
+
+      </div>
+    </footer>
+
+  </main>
+
+  <!-- BOTTOM PERSISTENT SECURITY WARNING FOOTER -->
+  <footer class="bg-[#111312] text-[#EDE8DC] font-mono text-[10px] sm:text-xs font-bold tracking-widest uppercase py-2.5 px-4 text-center border-t-2 border-[#B91C1C] mt-12">
+    WARNING: UNAUTHORIZED DISCLOSURE SUBJECT TO CRIMINAL SANCTIONS // EYES ONLY — ACADEMIC PORTFOLIO EDITION
+  </footer>
+
+  <!-- ===================================================================== -->
+  <!-- DECLASSIFIED FIELD LOG MODAL (INSPECT EXHIBIT DETAILS)                -->
+  <!-- ===================================================================== -->
+  <div id="exhibitModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-[#111312]/90 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="modalExhibitTitle">
+    <div class="w-full max-w-2xl paper-texture text-[#111312] rounded-xl border-2 border-[#111312] shadow-2xl overflow-hidden corner-marks">
+      <!-- Top Classified Modal Header -->
+      <div class="bg-[#141715] text-[#EDE8DC] px-6 py-4 border-b-2 border-[#B91C1C] flex items-start justify-between gap-4">
+        <div class="space-y-1">
+          <div class="flex flex-wrap items-center gap-2 font-mono text-[11px]">
+            <span id="modalCode" class="text-[#F59E0B] font-bold"></span>
+            <span>//</span>
+            <span id="modalGroup" class="text-[#A3B19E]"></span>
+          </div>
+          <h3 id="modalExhibitTitle" class="font-display text-xl sm:text-2xl font-bold uppercase tracking-wide text-[#EDE8DC]"></h3>
+        </div>
+        <button id="closeExhibitModalBtn" type="button" aria-label="Close Dossier File"
+                class="p-2 rounded bg-[#1B201C] hover:bg-[#B91C1C] text-[#EDE8DC] border border-[#4B5548] transition-colors cursor-pointer">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Modal Dossier Body -->
+      <div class="p-6 space-y-5 max-h-[74vh] overflow-y-auto text-sm leading-relaxed">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-[#111312]/25 pb-3">
+          <span id="modalSubtitle" class="font-mono text-xs font-bold text-[#4B5548]"></span>
+          <span id="modalStatusStamp" class="px-2.5 py-0.5 text-xs font-bold"></span>
+        </div>
+
+        <div class="space-y-1.5">
+          <h4 class="font-mono text-xs font-bold uppercase tracking-wider text-[#B91C1C]">INTELLIGENCE ASSESSMENT &amp; BRIEFING:</h4>
+          <p id="modalAssessment" class="text-[#1B201C]"></p>
+        </div>
+
+        <div class="p-4 rounded-lg bg-[#E2DCCD] border-2 border-[#111312] space-y-1.5">
+          <h4 class="font-mono text-xs font-bold uppercase tracking-wider text-[#111312]">DECLASSIFIED ZINE NOTES // FIELD LOG (WHAT I LEARNED):</h4>
+          <p id="modalFieldLog" class="font-typewriter text-xs sm:text-sm text-[#111312]"></p>
+        </div>
+
+        <div class="space-y-1.5">
+          <h4 class="font-mono text-xs font-bold uppercase tracking-wider text-[#2F3B2D]">DIRECT IMPACT ON MY GAME DEVELOPER PATH:</h4>
+          <p id="modalGameDevLink" class="text-[#1B201C]"></p>
+        </div>
+
+        <div id="modalTags" class="flex flex-wrap gap-2 pt-1"></div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="px-6 py-3.5 bg-[#E2DCCD] border-t-2 border-[#111312] flex items-center justify-between">
+        <span class="font-mono text-[10px] font-bold text-[#4B5548]">STATUS: ARCHIVE VERIFIED // EYES ONLY</span>
+        <button id="closeExhibitFooterBtn" type="button"
+                class="px-4 py-2 rounded bg-[#111312] hover:bg-[#B91C1C] text-[#EDE8DC] font-mono text-xs font-bold uppercase transition-colors cursor-pointer">
+          SEAL FILE
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tactical Toast Notification -->
+  <div id="tacticalToast"
+       class="fixed bottom-12 right-5 z-50 hidden items-center gap-2.5 px-4 py-3 rounded-lg bg-[#141715] text-[#EDE8DC] border-2 border-[#F59E0B] font-mono text-xs shadow-2xl">
+    <span class="w-2 h-2 rounded-full bg-[#F59E0B]"></span>
+    <span id="tacticalToastText">TRANSMISSION COPIED</span>
+  </div>
+
+  <script>
+    // Complete 8 Exhibits Dataset (Aligned to Game Development + Operational Existence Zine Style)
+    const fieldExhibits = [
+      // FILE GROUP A: IR001 SELF-DEV
+      {
+        id: 'exhibit-01',
+        code: 'EXHIBIT-01 // FILE: IR001-01',
+        group: 'A',
+        groupLabel: 'FILE GROUP A // SELF-DEVELOPMENT LOGS',
+        status: 'COMPLETED',
+        title: 'STRENGTHS MAP & SELF-ASSESSMENT DOSSIER',
+        subtitle: 'Big Five, VIA & Learning Style Analytical Synthesis',
+        assessment: 'Mapped my Big Five, VIA Character Strengths, and Learning Style assessments directly onto a game developer’s production workflow—identifying high conscientiousness, systems thinking, and calm leadership as core pillars.',
+        fieldLog: 'FIELD LOG: Solo deep-work blocks fuel my best C++ and database problem-solving, while my 7-year management background lets me step forward and organize group sprints when team momentum stalls.',
+        gameDevLink: 'Shipping a game requires balancing quiet technical implementation with clear team communication. Knowing my cognitive rhythm lets me structure both solo coding sprints and collaborative milestone reviews effectively.',
+        tags: ['Conscientiousness', 'Systems Thinking', 'Deep-Work Coding', 'Team Alignment']
+      },
+      {
+        id: 'exhibit-02',
+        code: 'EXHIBIT-02 // FILE: IR001-02',
+        group: 'A',
+        groupLabel: 'FILE GROUP A // SELF-DEVELOPMENT LOGS',
+        status: 'COMPLETED',
+        title: 'CAREER GOAL — GAP ANALYSIS & SMART ROADMAP',
+        subtitle: 'Strategic Transition from Project Manager & Business Owner to Game Developer',
+        assessment: 'Conducted a structured gap analysis evaluating my existing assets (7+ years PM, 2+ years business operations) against the technical requirements needed to ship playable game prototypes.',
+        fieldLog: 'FIELD LOG: I don’t need to abandon my operational background to become a game developer—I need to pair it with C++, Java, game engine fluency, and playable vertical slices.',
+        gameDevLink: 'Established a concrete semester-by-semester roadmap ensuring every programming lab, database schema, and design exercise at CIIT builds directly toward a studio-ready Game Developer portfolio.',
+        tags: ['Gap Analysis', 'SMART Objectives', 'Career Transition', 'Milestone Scoping']
+      },
+      {
+        id: 'exhibit-03',
+        code: 'EXHIBIT-03 // FILE: IR001-03',
+        group: 'A',
+        groupLabel: 'FILE GROUP A // SELF-DEVELOPMENT LOGS',
+        status: 'COMPLETED',
+        title: 'SELF-DEVELOPMENT PLAN 1 — TIME & STRESS MANAGEMENT PROTOCOL',
+        subtitle: 'Anti-Crunch Daily Routine & Analog/Digital Execution System',
+        assessment: 'Engineered a multi-layered scheduling protocol combining physical wall/refrigerator task boards, digital reminders, a strict 4:00 AM wake-up window, and an 8:00 PM digital disconnect.',
+        fieldLog: 'FIELD LOG: Willpower collapses under competing university coursework and business deadlines. Externalizing tasks onto physical boards and protecting sleep eliminates decision fatigue and keeps coding focus sharp.',
+        gameDevLink: 'Game development is notorious for crunch and burnout. Building a sustainable, anti-crunch operating system in freshman year prepares me to ship complex builds consistently without sacrificing code quality.',
+        tags: ['Anti-Crunch Protocol', '4:00 AM Code Block', 'Analog + Digital Triggers', 'Stress Resilience']
+      },
+      {
+        id: 'exhibit-04',
+        code: 'EXHIBIT-04 // FILE: IR001-04',
+        group: 'A',
+        groupLabel: 'FILE GROUP A // SELF-DEVELOPMENT LOGS',
+        status: 'COMPLETED',
+        title: 'SELF-DEVELOPMENT PLAN 2 — CONFLICT MANAGEMENT & SQUAD COHESION',
+        subtitle: 'Stakeholder Alignment & Peer Negotiation in Live Team Operations',
+        assessment: 'Documented structured conflict-resolution and communication frameworks tested while serving as Overall Event Lead for the "Glued to the Screen" campus symposium and collaborative group builds.',
+        fieldLog: 'FIELD LOG: When team friction arises under deadline pressure, separating ego from objective task requirements restores squad cohesion immediately.',
+        gameDevLink: 'Modern games are built by cross-disciplinary squads of programmers, artists, and designers. Calm negotiation and transparent task ownership prevent creative disagreements from derailing a build.',
+        tags: ['Squad Cohesion', 'Conflict Resolution', 'Event Leadership', 'Clear Comms']
+      },
+
+      // FILE GROUP B: GAME DEV & TECH
+      {
+        id: 'exhibit-05',
+        code: 'EXHIBIT-05 // FILE: OE-ALPHA-14',
+        group: 'B',
+        groupLabel: 'FILE GROUP B // GAME DEV & TECHNICAL EXHIBITS',
+        status: 'COMPLETED',
+        title: '"OPERATIONAL EXISTENCE" TACTICAL ZINE (GE009-12)',
+        subtitle: '14-Page Classified Worldbuilding & Narrative Systems Bible',
+        assessment: 'Authored a 14-page classified military intelligence zine examining phenomenological survival ("surviving the mission") versus systemic breakdown ("witnessing the collapse") across 10 field exhibits.',
+        fieldLog: 'FIELD LOG: Structured around asymmetric warfare, squad brotherhood, resource scarcity, and institutional failure—serving as a complete narrative and thematic bible for a tactical squad game.',
+        gameDevLink: 'Demonstrates my ability to design cohesive game worlds, diegetic UI/document aesthetics, and thematic mechanics where player survival and moral choices carry real weight.',
+        tags: ['Tactical Worldbuilding', 'Narrative Bible', 'Diegetic UI Style', '14-Page Zine']
+      },
+      {
+        id: 'exhibit-06',
+        code: 'EXHIBIT-06 // FILE: NAR-GLITCH-06',
+        group: 'B',
+        groupLabel: 'FILE GROUP B // GAME DEV & TECHNICAL EXHIBITS',
+        status: 'COMPLETED',
+        title: '"GLITCHED OUT" / IMPENG NEGRO NARRATIVE ADAPTATION PITCH',
+        subtitle: 'Environmental Storytelling & Character Tension in a Gaming Lounge Setting',
+        assessment: 'Reimagined classic Philippine literature inside a modern competitive gaming lounge ("Glitch Gaming Lounge"), translating social friction into branching character tension and environmental cues.',
+        fieldLog: 'FIELD LOG: Adapted interpersonal conflict into modern esports/gaming culture, focusing on how space, dialogue pacing, and player perspective heighten emotional stakes.',
+        gameDevLink: 'Sharpens my narrative design instincts for game development—proving that grounded human conflict and environmental storytelling make interactive worlds feel authentic.',
+        tags: ['Narrative Adaptation', 'Environmental Storytelling', 'Character Tension', 'Game Pitch']
+      },
+      {
+        id: 'exhibit-07',
+        code: 'EXHIBIT-07 // FILE: TECH-CORE-07',
+        group: 'B',
+        groupLabel: 'FILE GROUP B // GAME DEV & TECHNICAL EXHIBITS',
+        status: 'IN PROGRESS',
+        title: 'CORE GAME PROGRAMMING & BACKEND STATE SYSTEMS (C++, JAVA, MYSQL)',
+        subtitle: '1st Year BS EMC Object-Oriented Logic & Relational Database Labs',
+        assessment: 'Actively building object-oriented combat and state-machine logic in C++ and Java alongside normalized relational database schemas in MySQL/phpMyAdmin for player stats, gear loadouts, and quest progression.',
+        fieldLog: 'FIELD LOG: Currently mastering classes, inheritance, memory logic, and relational foreign keys—connecting how gameplay rules interact with persistent player data tables.',
+        gameDevLink: 'Forms the technical backbone of my Game Developer transition: writing clean, modular gameplay code backed by structured state persistence.',
+        tags: ['C++ OOP', 'Java State Logic', 'MySQL / phpMyAdmin', 'Loadout Schemas']
+      },
+      {
+        id: 'exhibit-08',
+        code: 'EXHIBIT-08 // FILE: PROTO-RW-08',
+        group: 'B',
+        groupLabel: 'FILE GROUP B // GAME DEV & TECHNICAL EXHIBITS',
+        status: 'FUTURE CONCEPT',
+        title: '"PROJECT RIDGEWATCH" — ASYMMETRIC TACTICAL PROTOTYPE',
+        subtitle: 'Planned Playable Vertical Slice • Squad Resource Management & Database Progression',
+        assessment: 'Planned playable vertical slice inspired by my Operational Existence zine—combining squad stamina/ration management, branching moral decisions, and MySQL-persisted loadout progression.',
+        fieldLog: 'FIELD LOG: Scoped for 2nd-year engine implementation (Unity/Unreal). Will test asymmetric encounter pacing, diegetic HUD feedback, and persistent squad consequences.',
+        gameDevLink: 'Serves as my flagship capstone prototype uniting tactical worldbuilding, gameplay programming, and database-driven player progression into a downloadable playable build.',
+        tags: ['Vertical Slice Plan', 'Asymmetric Tactics', 'Unity/Unreal Target', 'DB Progression']
+      }
+    ];
+
+    let activeGroupFilter = 'all';
+    let activeStatusFilter = 'all';
+
+    function getStampClass(status) {
+      if (status === 'COMPLETED') return 'stamp-olive';
+      if (status === 'IN PROGRESS') return 'stamp-amber';
+      return 'stamp-badge';
+    }
+
+    function renderExhibits() {
+      const groupAGrid = document.getElementById('groupAGrid');
+      const groupBGrid = document.getElementById('groupBGrid');
+      const groupASection = document.getElementById('groupASection');
+      const groupBSection = document.getElementById('groupBSection');
+
+      groupAGrid.innerHTML = '';
+      groupBGrid.innerHTML = '';
+
+      const filtered = fieldExhibits.filter(item => {
+        const matchGroup = activeGroupFilter === 'all' || item.group === activeGroupFilter;
+        const matchStatus = activeStatusFilter === 'all' || item.status === activeStatusFilter;
+        return matchGroup && matchStatus;
+      });
+
+      const groupAItems = filtered.filter(i => i.group === 'A');
+      const groupBItems = filtered.filter(i => i.group === 'B');
+
+      groupASection.style.display = groupAItems.length ? 'block' : 'none';
+      groupBSection.style.display = groupBItems.length ? 'block' : 'none';
+
+      const buildCard = (item) => `
+        <article class="paper-texture text-[#111312] rounded-xl border-2 border-[#111312] p-6 shadow-xl flex flex-col justify-between space-y-5 corner-marks hover:-translate-y-0.5 transition-transform">
+          <div class="space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-[#111312]/25 pb-2.5">
+              <span class="font-mono text-xs font-bold text-[#4B5548]">${item.code}</span>
+              <span class="${getStampClass(item.status)} px-2.5 py-0.5 text-[11px] font-bold">
+                ${item.status}
+              </span>
+            </div>
+
+            <h4 class="font-display text-xl sm:text-2xl font-bold uppercase text-[#111312] leading-snug">
+              ${item.title}
+            </h4>
+            <p class="font-mono text-xs font-bold text-[#B45309]">${item.subtitle}</p>
+            <p class="text-sm text-[#1F2420] leading-relaxed">
+              ${item.assessment}
+            </p>
+          </div>
+
+          <div class="pt-4 border-t border-[#111312]/25 flex flex-wrap items-center justify-between gap-3">
+            <div class="flex flex-wrap gap-1.5">
+              ${item.tags.slice(0, 2).map(t => `
+                <span class="px-2 py-0.5 rounded bg-[#E2DCCD] border border-[#111312]/40 font-mono text-[10px] font-bold text-[#111312]">${t}</span>
+              `).join('')}
+            </div>
+
+            <button type="button" data-inspect-id="${item.id}"
+                    class="px-4 py-2 rounded bg-[#111312] hover:bg-[#B91C1C] text-[#EDE8DC] font-mono text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer">
+              OPEN FIELD LOG &rarr;
+            </button>
+          </div>
+        </article>
+      `;
+
+      groupAItems.forEach(item => groupAGrid.insertAdjacentHTML('beforeend', buildCard(item)));
+      groupBItems.forEach(item => groupBGrid.insertAdjacentHTML('beforeend', buildCard(item)));
+
+      // Empty filter fallback
+      if (!filtered.length) {
+        groupASection.style.display = 'block';
+        groupAGrid.innerHTML = `
+          <div class="col-span-full bg-[#1B201C] border border-[#4B5548] rounded-xl p-8 text-center font-mono text-sm text-[#A3B19E]">
+            NO CLASSIFIED EXHIBITS MATCH CURRENT FILTER PARAMETERS. RESET FILE GROUP OR STATUS TO VIEW ARCHIVE.
+          </div>
+        `;
+      }
+
+      document.querySelectorAll('[data-inspect-id]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          openExhibitModal(btn.getAttribute('data-inspect-id'));
+        });
+      });
+    }
+
+    // Modal Controls
+    const exhibitModal = document.getElementById('exhibitModal');
+    function openExhibitModal(id) {
+      const item = fieldExhibits.find(e => e.id === id);
+      if (!item) return;
+
+      document.getElementById('modalCode').textContent = item.code;
+      document.getElementById('modalGroup').textContent = item.groupLabel;
+      document.getElementById('modalExhibitTitle').textContent = item.title;
+      document.getElementById('modalSubtitle').textContent = item.subtitle;
+
+      const stampEl = document.getElementById('modalStatusStamp');
+      stampEl.textContent = item.status;
+      stampEl.className = `${getStampClass(item.status)} px-2.5 py-0.5 text-xs font-bold`;
+
+      document.getElementById('modalAssessment').textContent = item.assessment;
+      document.getElementById('modalFieldLog').textContent = item.fieldLog;
+      document.getElementById('modalGameDevLink').textContent = item.gameDevLink;
+
+      document.getElementById('modalTags').innerHTML = item.tags.map(tag =>
+        `<span class="px-2.5 py-1 rounded bg-[#E2DCCD] border border-[#111312] font-mono text-xs font-bold text-[#111312]">${tag}</span>`
+      ).join('');
+
+      exhibitModal.classList.remove('hidden');
+      exhibitModal.classList.add('flex');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeExhibitModal() {
+      exhibitModal.classList.add('hidden');
+      exhibitModal.classList.remove('flex');
+      document.body.style.overflow = '';
+    }
+
+    document.getElementById('closeExhibitModalBtn').addEventListener('click', closeExhibitModal);
+    document.getElementById('closeExhibitFooterBtn').addEventListener('click', closeExhibitModal);
+    exhibitModal.addEventListener('click', (e) => {
+      if (e.target === exhibitModal) closeExhibitModal();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !exhibitModal.classList.contains('hidden')) closeExhibitModal();
+    });
+
+    // Exhibit Group Filter Buttons
+    document.querySelectorAll('.exhibit-group-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        activeGroupFilter = btn.getAttribute('data-group-filter');
+        document.querySelectorAll('.exhibit-group-btn').forEach(b => {
+          b.className = 'exhibit-group-btn px-3 py-1.5 rounded bg-[#141715] text-[#EDE8DC] border border-[#4B5548] hover:border-[#EDE8DC]';
+        });
+        btn.className = 'exhibit-group-btn px-3 py-1.5 rounded bg-[#EDE8DC] text-[#111312] font-bold';
+        renderExhibits();
+      });
+    });
+
+    // Exhibit Status Filter Buttons
+    document.querySelectorAll('.exhibit-status-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        activeStatusFilter = btn.getAttribute('data-status-filter');
+        document.querySelectorAll('.exhibit-status-btn').forEach(b => {
+          b.className = 'exhibit-status-btn px-2.5 py-1.5 rounded bg-[#141715] text-[#A3B19E] border border-[#4B5548] hover:text-[#EDE8DC]';
+        });
+        btn.className = 'exhibit-status-btn px-2.5 py-1.5 rounded bg-[#B45309] text-[#EDE8DC] font-bold';
+        renderExhibits();
+      });
+    });
+
+    // Tactical Capability Matrix Filter
+    document.querySelectorAll('.cap-filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const domain = btn.getAttribute('data-cap-filter');
+        document.querySelectorAll('.cap-filter-btn').forEach(b => {
+          b.className = 'cap-filter-btn px-3.5 py-2 rounded bg-[#141715] text-[#EDE8DC] border border-[#4B5548] hover:border-[#EDE8DC]';
+        });
+        btn.className = 'cap-filter-btn px-3.5 py-2 rounded bg-[#EDE8DC] text-[#111312] font-bold';
+
+        document.querySelectorAll('.cap-card').forEach(card => {
+          const cardDomain = card.getAttribute('data-cap-domain');
+          card.style.display = (domain === 'all' || cardDomain === domain) ? 'block' : 'none';
+        });
+      });
+    });
+
+    // Interactive Radar HUD Nodes
+    const radarSectors = [
+      {
+        label: 'SECTOR: GAMEPLAY_LOOP',
+        text: '<span class="text-[#F59E0B] font-bold">[GAMEPLAY LOGIC]:</span> Translating rules into C++ &amp; Java state machines—combat loops, resource stamina, and responsive player feedback.'
+      },
+      {
+        label: 'SECTOR: STATE_&_SQL',
+        text: '<span class="text-[#EF4444] font-bold">[STATE &amp; DATA ARCHITECTURE]:</span> Designing normalized MySQL schemas for player inventories, gear loadouts, and persistent quest progression.'
+      },
+      {
+        label: 'SECTOR: WORLDBUILDING',
+        text: '<span class="text-[#A3B19E] font-bold">[TACTICAL WORLDBUILDING]:</span> Crafting grounded, high-stakes worlds and diegetic interfaces inspired by my <em>Operational Existence</em> zine.'
+      }
+    ];
+
+    function setRadarSector(idx) {
+      const data = radarSectors[idx];
+      if (!data) return;
+      document.getElementById('radarActiveSector').textContent = data.label;
+      document.getElementById('radarReadout').innerHTML = data.text;
+      document.querySelectorAll('.radar-tab-btn').forEach((btn, i) => {
+        if (i === idx) {
+          btn.className = 'radar-tab-btn py-2 px-2 rounded bg-[#B45309] text-[#EDE8DC] font-bold border border-[#F59E0B]';
+        } else {
+          btn.className = 'radar-tab-btn py-2 px-2 rounded bg-[#1B201C] text-[#A3B19E] border border-[#4B5548] hover:text-[#EDE8DC]';
+        }
+      });
+    }
+
+    document.querySelectorAll('[data-radar-btn]').forEach(btn => {
+      btn.addEventListener('click', () => setRadarSector(Number(btn.getAttribute('data-radar-btn'))));
+    });
+    document.querySelectorAll('.radar-node').forEach(node => {
+      node.addEventListener('click', () => setRadarSector(Number(node.getAttribute('data-radar'))));
+    });
+
+    // Interactive Redaction Blocks (Individual + Global Toggle)
+    const redactedElements = document.querySelectorAll('.redacted-block');
+    let allDeclassified = false;
+
+    function toggleSingleRedaction(el) {
+      el.classList.toggle('declassified');
+      syncGlobalDeclassifyState();
+    }
+
+    function syncGlobalDeclassifyState() {
+      const total = redactedElements.length;
+      const revealed = document.querySelectorAll('.redacted-block.declassified').length;
+      allDeclassified = (total > 0 && revealed === total);
+      document.getElementById('globalDeclassifyText').textContent = allDeclassified ? 'RESTORE REDACTIONS' : 'DECLASSIFY ALL';
+      document.getElementById('declassifyLed').className = allDeclassified
+        ? 'w-2 h-2 rounded-full bg-emerald-500'
+        : 'w-2 h-2 rounded-full bg-[#B91C1C]';
+    }
+
+    redactedElements.forEach(el => {
+      el.addEventListener('click', () => toggleSingleRedaction(el));
+      el.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          toggleSingleRedaction(el);
+        }
+      });
+    });
+
+    document.getElementById('globalDeclassifyBtn').addEventListener('click', () => {
+      allDeclassified = !allDeclassified;
+      redactedElements.forEach(el => {
+        if (allDeclassified) {
+          el.classList.add('declassified');
+        } else {
+          el.classList.remove('declassified');
+        }
+      });
+      syncGlobalDeclassifyState();
+      showToast(allDeclassified ? 'ALL CLASSIFIED NOTES DECLASSIFIED' : 'REDACTION BARS RESTORED');
+    });
+
+    // Mobile Folder Navigation Toggle
+    const mobileNavBtn = document.getElementById('mobileNavBtn');
+    const mobileNavMenu = document.getElementById('mobileNavMenu');
+    mobileNavBtn.addEventListener('click', () => {
+      mobileNavMenu.classList.toggle('hidden');
+    });
+    mobileNavMenu.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => mobileNavMenu.classList.add('hidden'));
+    });
+
+    // Toast Helper & One-Click Copy Email
+    function showToast(msg) {
+      const toast = document.getElementById('tacticalToast');
+      document.getElementById('tacticalToastText').textContent = msg;
+      toast.classList.remove('hidden');
+      toast.classList.add('flex');
+      setTimeout(() => {
+        toast.classList.add('hidden');
+        toast.classList.remove('flex');
+      }, 2800);
+    }
+
+    document.getElementById('copyCommsBtn').addEventListener('click', () => {
+      const email = document.getElementById('commsEmail').textContent.trim();
+      const tempInput = document.createElement('textarea');
+      tempInput.value = email;
+      tempInput.style.position = 'fixed';
+      tempInput.style.opacity = '0';
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      try {
+        document.execCommand('copy');
+        showToast('COMMS ADDRESS COPIED: ' + email);
+      } catch (err) {
+        showToast('COMMS ADDRESS: ' + email);
+      }
+      document.body.removeChild(tempInput);
+    });
+
+    // Initial Render
+    renderExhibits();
+  </script>
+</body>
+</html>
